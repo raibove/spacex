@@ -5,6 +5,7 @@ import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 
+import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -35,8 +36,7 @@ const useStyles = makeStyles(theme => ({
        // height:'440px',
        [theme.breakpoints.down('sm')]: {
         padding:'25px'
-    },
-    
+        },
     },
     cardAction:{
         display:'flex',
@@ -56,16 +56,29 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('xs')]: {
             fontSize:'25px'
         },
-        
+    },
+    filter:{
+        margin:'10px',
+        backgroundColor:'white',
+    },
+    activeYear:{
+        backgroundColor:'yellow'
     }
   }));
   
-
+const years = [2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020];
 const Cards=()=>{
     const classes = useStyles();
     const [isLoading, setIsLoading] = useState(false);
     const [cardData, setCardData] = useState();
-
+    const [activeYear, setActiveYear] = useState(null);
+    const [launchSuccess, setLaunchSuccess] = useState('');
+    const handleYear= (e,yr)=>{
+        if(activeYear==yr)
+            setActiveYear(null);
+        else
+            setActiveYear(yr);
+    };
     useEffect(()=>{
 
         setIsLoading(true);
@@ -83,9 +96,33 @@ const Cards=()=>{
         <div>
                 {console.log("dttt ** ",cardData)}
             {cardData?(
-        <Grid  className={classes.root}>
-                <Grid container justify="center" display="flex">
-                {cardData.map(crd=>(
+        <Grid  className={classes.root} container justify="center" display="flex">
+                <Grid item xs={2}>
+                    <div className={classes.filter}>
+                        Filters
+                        <h2>Launch Year</h2>
+                        <Grid container  display="flex" style={{padding:'8px'}}>
+                        {years.map((yr,index)=>(
+                        <Grid item xs={12} sm={4} lg={6} style={{padding:'8px'}}>
+                            <Chip 
+                                key={index}
+                                label={yr}
+                                onClick={e=> handleYear(e,yr)}
+                                className={activeYear==years[index]?classes.activeYear:''}
+                            />
+                        </Grid>
+                        )
+                       
+                    )}
+                    </Grid>
+                    </div>
+                </Grid>
+                <Grid item xs={2} sm={8}>
+                <Grid container  display="flex">
+                {cardData.filter(card=> (
+                        !activeYear? card.launch_year: card.launch_year == activeYear
+                        )).
+                map(crd=>(
                     <Grid key={crd.flight_number} item xs={12} sm={4} md={4} lg={3} className={classes.card}>
                        <Card  className={classes.cardContainer}>
                             <CardActionArea className={classes.cardAction}>
@@ -107,6 +144,7 @@ const Cards=()=>{
                    </Grid>
                 ))}
             </Grid>
+            </Grid>
         </Grid>
             ):(<div>
                 Loading
@@ -116,21 +154,3 @@ const Cards=()=>{
 }
 
 export default Cards;
-
-/*
-
- <Card  className={classes.cardContainer}>
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    alt={crd.rocket.rocket_name}
-                                    image = {crd.links.mission_patch}
-                                    title="space"
-                                    className={classes.cardImg}
-                                />
-                            </CardActionArea>
-                            <CardContent>
-                                <h2>{crd.mission_name} #{crd.flight_number}</h2>
-                            </CardContent>
-                        </Card>
-*/
