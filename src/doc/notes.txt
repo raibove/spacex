@@ -1,0 +1,3 @@
+To modify url on tag click we will need the tag name and then we need to pass it as query and modify url accordingly.
+
+To modify url with the query we will create setParams function. It will accept the query and generate search parameter from it.

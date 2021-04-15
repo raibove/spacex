@@ -1,5 +1,5 @@
 import React,{ useEffect, useState }  from 'react';
-
+import {withRouter,useHistory } from 'react-router-dom';
 import Grid from "@material-ui/core/Grid";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import axios from "axios";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles( (theme) => ({
     root: {
       flexGrow:1,
       backgroundColor:'#aaf',
@@ -71,20 +71,35 @@ const useStyles = makeStyles(theme => ({
     }
   }));
   
+const setParams = ({year})=>{
+    const searchParams = new URLSearchParams();
+    if(year)
+    searchParams.set("year",year);
+    else
+    searchParams.delete("year")
+    return searchParams.toString(); 
+}
+
+//const url = setParams({year:"2000"});
 const years = [2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020];
 const launch_success = ['true','false'];
-const Cards=()=>{
+const Cards=(props)=>{
+
     const classes = useStyles();
+
     const [isLoading, setIsLoading] = useState(false);
     const [cardData, setCardData] = useState();
     const [activeYear, setActiveYear] = useState(null);
     const [launchSuccess, setLaunchSuccess] = useState(null);
+
+    let history = useHistory();
+
     const handleYear= (e,yr)=>{
         if(activeYear==yr)
             setActiveYear(null);
         else
             setActiveYear(yr);
-    };
+        };
 
     const handleLaunch=(e,launch)=>{
         if(launchSuccess==launch)
@@ -92,6 +107,27 @@ const Cards=()=>{
         else
             setLaunchSuccess(launch);
     }
+
+    const updateUrl = ({year,success})=>{
+        const searchParams = new URLSearchParams();
+        if(success!=null)
+            searchParams.set("success",success)
+        else
+            searchParams.delete("success")
+        if(year!=null)
+            searchParams.set("year",year)
+        else
+            searchParams.delete("year")     
+        const url = searchParams.toString();
+        //if(url){
+        history.push(`?${url}`);
+        /*
+        else{
+            history.push('/')
+        } 
+    */
+    }
+
     useEffect(()=>{
 
         setIsLoading(true);
@@ -105,6 +141,10 @@ const Cards=()=>{
         })
         setIsLoading(false);
     },[]);
+
+    useEffect(()=>{
+        updateUrl({year:activeYear, success:launchSuccess});
+    },[activeYear,launchSuccess]);
     return(
         <div>
                 {console.log("dttt ** ",cardData)}
@@ -135,7 +175,7 @@ const Cards=()=>{
                                 <Chip
                                     key={index}
                                     label={launch}
-                                    onClick={e=>handleLaunch(e,launch)}
+                                    onClick={e=>{ handleLaunch(e,launch);  }}
                                     className={launchSuccess==launch_success[index]?classes.launchSuccess:''}
                                 />
                             </Grid>
@@ -148,9 +188,9 @@ const Cards=()=>{
                 <Grid container  display="flex">
                 {cardData.filter(card=> (
                         (!activeYear? card.launch_year: card.launch_year == activeYear) && (launchSuccess==null? String(card.launch_success): String(card.launch_success) == launchSuccess)
-                        )).map(crd=>(
+                        )).map((crd,i)=>(
                             <Grid key={crd.flight_number} item xs={12} sm={4} md={4} lg={3} className={classes.card}>
-                            <Card  className={classes.cardContainer}>
+                            <Card  key={i} className={classes.cardContainer}>
                                     <CardActionArea className={classes.cardAction}>
                                         <CardMedia
                                             component="img"
@@ -177,6 +217,6 @@ const Cards=()=>{
             </div>)}
         </div>
     )
-}
+};
 
-export default Cards;
+export default withRouter(Cards);

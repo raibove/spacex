@@ -38,7 +38,14 @@
 }
 
 
-.MuiGrid-item .MuiChip-clickable:hover,
-.MuiGrid-item .MuiChip-clickable:focus {
+
+.MuiGrid-item .makeStyles-activeYear-8.MuiChip-clickable:hover,
+.MuiGrid-item .makeStyles-activeYear-8.MuiChip-clickable:focus {
   background: #cfd;
+}
+
+
+.MuiGrid-item .makeStyles-launchSuccess-9.MuiChip-clickable:hover,
+.MuiGrid-item .makeStyles-launchSuccess-9.MuiChip-clickable:focus {
+  background: yellow;
 }
