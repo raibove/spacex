@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+.MuiGrid-item .MuiChip-clickable:hover,
+.MuiGrid-item .MuiChip-clickable:focus {
+  background: #cfd;
+}
